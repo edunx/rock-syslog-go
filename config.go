@@ -6,5 +6,5 @@ type Server struct {
 	protocol  string
 	listen    string
 	format    string
-	transport pub.Transport
+	transport []pub.Transport
 }

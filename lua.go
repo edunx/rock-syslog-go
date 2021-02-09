@@ -2,7 +2,6 @@ package syslog
 
 import (
 	"github.com/edunx/lua"
-	pub "github.com/edunx/rock-public-go"
 )
 
 const (
@@ -33,7 +32,7 @@ func CreateSyslogServerUserdata(L *lua.LState) int {
 		protocol: opt.CheckString("protocol", "udp"),
 		listen:   opt.CheckString("listen", "0.0.0.0:514"),
 		format:   opt.CheckString("format" , "json"),
-		transport: pub.CheckTransportByTable("transport" , opt),
+		transport: CheckTransports( opt.RawGetString("transport")),
 	}
 
 	if e := s.Start(); e != nil {

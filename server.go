@@ -29,21 +29,28 @@ func (s *Server) Start() error {
 	}
 
 	server.Boot()
-	for logParts := range channel {
-		switch  s.format {
-		case "json":
-			if v, e := json.Marshal(logParts); e == nil {
-				s.transport.Push( v )
-			} else {
-				pub.Out.Err("syslog-go err: %v" , e)
+	go func(channel syslog.LogPartsChannel){
+		for item := range channel {
+			switch s.format {
+			case "json":
+				if v, e := json.Marshal( item ); e == nil {
+					s.Push( v )
+				} else {
+					pub.Out.Err("syslog-go err: %v" , e)
+				}
+			case "line":
+				s.Push( fmt.Sprintf("%v" , item ))
 			}
-
-		default:
-			s.transport.Push( fmt.Sprintf("%v\n" , logParts ))
 		}
-	}
+	}(channel)
 
 	return nil
+}
+
+func (s *Server) Push( v interface{} ) {
+	for _ , tp := range	s.transport {
+		tp.Push( v )
+	}
 }
 
 func (s *Server) Close() {
