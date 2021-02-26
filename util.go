@@ -3,9 +3,10 @@ package syslog
 import (
 	"github.com/edunx/lua"
 	pub "github.com/edunx/rock-public-go"
+	tp "github.com/edunx/rock-transport-go"
 )
 
-func CheckTransports( v lua.LValue ) []pub.Transport {
+func CheckTransports( v lua.LValue ) []tp.Tunnel {
 
 	if v.Type() != lua.LTTable {
 		pub.Out.Err("not found transports")
@@ -19,16 +20,16 @@ func CheckTransports( v lua.LValue ) []pub.Transport {
 		return nil
 	}
 
-	rc := make([]pub.Transport , size)
-	for i:=1 ; i<=size ; i++ {
+	rc := make([]tp.Tunnel , size)
+	for i:= 1 ; i<=size ; i++ {
 		item := tab.RawGetInt(i)
 		if item.Type() != lua.LTUserData {
 			pub.Out.Err("id: %d  not transport userdata" , i)
 			return nil
 		}
 
-		tp := pub.CheckTransport( item.(*lua.LUserData) )
-		rc[i - 1] = tp
+		tun := tp.CheckTunnel( item.(*lua.LUserData) )
+		rc[i - 1] = tun
 	}
 
 	return rc

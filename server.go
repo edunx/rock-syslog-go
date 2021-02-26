@@ -8,6 +8,7 @@ import (
 	"gopkg.in/mcuadros/go-syslog.v2"
 )
 
+
 func (s *Server) Start() error {
 	channel := make(syslog.LogPartsChannel)
 	handler := syslog.NewChannelHandler(channel)
@@ -48,8 +49,8 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) Push( v interface{} ) {
-	for _ , tp := range	s.transport {
-		tp.Push( v )
+	for _ , tun := range	s.transport {
+		tun.Push( v )
 	}
 }
 
@@ -59,4 +60,11 @@ func (s *Server) Close() {
 
 func (s *Server) Reload() {
 
+}
+
+func (s *Server) Type() string {
+	return "syslog.server"
+}
+
+func (s *Server) Proxy( info string , v interface{}) {
 }
