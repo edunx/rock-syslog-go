@@ -5,9 +5,9 @@ import (
 )
 
 func LuaInjectApi(L *lua.LState, parent *lua.LTable) {
-	sysTab := L.CreateTable(0, 2)
-	LuaInjectServerApi(L , sysTab)
+	syslog := &lua.UserKV{}
 
-	L.SetField(parent, "syslog", sysTab)
+	syslog.Set("server" , lua.NewGFunction( createSyslogServer ))
+
+	L.SetField(parent, "syslog", syslog )
 }
-
