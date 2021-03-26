@@ -45,25 +45,29 @@ func (s *Server) Start() error {
 		}
 	}(channel)
 
+	s.obj = server
+
 	return nil
 }
 
 func (s *Server) Push( v interface{} ) {
-	for _ , tun := range s.transport {
-		tun.Push( v )
+	n := len(s.IO)
+	for i := 0; i< n ;i++ {
+		s.IO[i].Write( v )
 	}
 }
 
 func (s *Server) Close() {
-
-}
-
-func (s *Server) Reload() {
-
+	pub.Out.Err("%s stop succeed" , s.name)
+	s.obj.Kill()
 }
 
 func (s *Server) Type() string {
 	return "syslog.server"
+}
+
+func (s *Server) Name() string {
+	return s.name
 }
 
 func (s *Server) Proxy( info string , v interface{}) {
