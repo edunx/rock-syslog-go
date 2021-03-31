@@ -35,12 +35,12 @@ func (s *Server) Start() error {
 			switch s.format {
 			case "json":
 				if v, e := json.Marshal( item ); e == nil {
-					s.Push( v )
+					s.write( v )
 				} else {
 					pub.Out.Err("syslog-go err: %v" , e)
 				}
 			case "line":
-				s.Push( fmt.Sprintf("%v" , item ))
+				s.write( fmt.Sprintf("%v" , item ))
 			}
 		}
 	}(channel)
@@ -50,10 +50,12 @@ func (s *Server) Start() error {
 	return nil
 }
 
-func (s *Server) Push( v interface{} ) {
+func (s *Server) write( v interface{} ) {
 	n := len(s.IO)
 	for i := 0; i< n ;i++ {
-		s.IO[i].Write( v )
+		if err := s.IO[i].Write( v ); err != nil {
+			pub.Out.Err("%s write io fail , err: %v" , s.name , err )
+		}
 	}
 }
 
